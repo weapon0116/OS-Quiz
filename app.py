@@ -151,11 +151,14 @@ ALL_QUIZZES = [
         "answer": "오별이",
         "desc": "우리 학교 대표 캐릭터의 이름은 '오별이'입니다!"
     },
+
+    # --- 배치도 문제 4종 (이미지 연동) ---
     {
         "id": "CHOICE-5",
         "category": "객관식(배치도)",
-        "q": "[배치도 퀴즈] 3층 D305호에 위치하며, 맛있는 간식을 살 수 있는 이곳은?",
+        "q": "[배치도 퀴즈] 3층 D305호에 위치하며, 맛있는 간식을 살 수 있는 이곳은 어디일까요?",
         "type": "choice",
+        "image_path": "images/floor_map_store.png",
         "options": ["매점", "교무센터1", "성적관리실"],
         "answer": "매점",
         "desc": "3층 D305호는 '매점'입니다."
@@ -165,6 +168,7 @@ ALL_QUIZZES = [
         "category": "객관식(배치도)",
         "q": "[배치도 퀴즈] 각 층 복도마다 학생들이 모여 쉴 수 있게 마련된 열린 공간의 명칭은?",
         "type": "choice",
+        "image_path": "images/floor_map_homebase.png",
         "options": ["홈베이스", "홈그라운드", "센트럴홈"],
         "answer": "홈베이스",
         "desc": "배치도 곳곳에 위치한 학생 쉼터는 '홈베이스'입니다."
@@ -174,6 +178,7 @@ ALL_QUIZZES = [
         "category": "객관식(배치도)",
         "q": "[배치도 퀴즈] 3층 D310호에 위치한 실습실의 올바른 명칭은?",
         "type": "choice",
+        "image_path": "images/floor_map_ai.png",
         "options": ["AI 실습실", "AI 융합실", "AI 학습실"],
         "answer": "AI 실습실",
         "desc": "3층 동편 끝 D310호는 'AI 실습실'입니다."
@@ -183,6 +188,7 @@ ALL_QUIZZES = [
         "category": "객관식(배치도)",
         "q": "[배치도 퀴즈] 2층 D209호에 위치한 분석실의 올바른 명칭은?",
         "type": "choice",
+        "image_path": "images/floor_map_bigdata.png",
         "options": ["빅데이터 분석실", "빅데이터 활용실", "빅데이터 실습실"],
         "answer": "빅데이터 분석실",
         "desc": "2층 동편 끝 D209호는 '빅데이터 분석실'입니다."
@@ -261,7 +267,6 @@ def init_game():
     st.session_state.score = 0
     st.session_state.show_feedback = False
     st.session_state.last_result = None
-    # 전체 퀴즈에서 무작위 3문제 선택
     st.session_state.game_questions = random.sample(ALL_QUIZZES, 3)
 
 if "game_questions" not in st.session_state:
@@ -308,7 +313,7 @@ if current_idx < total_q:
     st.caption(f"문제 {current_idx + 1} / {total_q}  ·  유형: {q_data['category']}")
     st.subheader(f"Q{current_idx + 1}. {q_data['q']}")
 
-    # 이미지 첨부 확인
+    # 1) 로고 비교 이미지
     if q_data.get("image_type") == "logo":
         col1, col2 = st.columns(2)
         with col1:
@@ -317,10 +322,17 @@ if current_idx < total_q:
         with col2:
             if os.path.exists("images/logo_purple.png"):
                 st.image("images/logo_purple.png", caption="2번 로고", width=180)
-                
+
+    # 2) 오별이 이미지
     elif q_data.get("image_type") == "obyeol":
         if os.path.exists("images/obyeol.png"):
             st.image("images/obyeol.png", caption="이 캐릭터의 이름은?", width=200)
+
+    # 3) 배치도 퀴즈 이미지 (화면 꽉 차게 표시)
+    elif "image_path" in q_data:
+        img_path = q_data["image_path"]
+        if os.path.exists(img_path):
+            st.image(img_path, caption="[참고] 2026 천안오성고 공간조성 배치도", use_container_width=True)
 
     # 1-1. 정답 피드백 상태
     if st.session_state.show_feedback:
@@ -329,7 +341,7 @@ if current_idx < total_q:
             st.success(f"⭕ **정답입니다!**\n\n{res['desc']}")
         else:
             ans_display = res['answer'] if isinstance(res['answer'], str) else res['answer'][0]
-            st.error(f"❌ **오답입니다!** (입력/선택: {res['user_input']})\n\n👉 **정답: {ans_display}**\n\n💡 {res['desc']}")
+            st.error(f"❌ **오답입니다!** (선택/입력한 답: {res['user_input']})\n\n👉 **정답: {ans_display}**\n\n💡 {res['desc']}")
             
         st.write("")
         if st.button("➡️ 다음으로 이동", use_container_width=True, type="primary"):
@@ -337,12 +349,12 @@ if current_idx < total_q:
             st.session_state.current_idx += 1
             st.rerun()
 
-    # 1-2. 답안 제출 상태
+    # 1-2. 문제 풀이 입력 상태
     else:
         # 단답형
         if q_data["type"] == "short":
             with st.form(key=f"short_form_{current_idx}"):
-                user_val = st.text_input("정답 입력 (숫자 또는 단어):", placeholder="여기에 입력하세요")
+                user_val = st.text_input("정답 입력 (숫자 또는 단어):", placeholder="여기에 정답을 입력하세요")
                 submit = st.form_submit_button("정답 제출", use_container_width=True)
                 
                 if submit:
@@ -380,7 +392,7 @@ if current_idx < total_q:
                     st.session_state.show_feedback = True
                     st.rerun()
 
-        # 객관식 형
+        # 객관식 형 (배치도 문제 포함)
         else:
             for opt in q_data["options"]:
                 if st.button(opt, use_container_width=True, key=f"choice_{current_idx}_{opt}"):
@@ -396,10 +408,10 @@ if current_idx < total_q:
                     st.session_state.show_feedback = True
                     st.rerun()
 
-# 2. 결과 화면 (보상 확인)
+# 2. 결과 화면
 else:
     score = st.session_state.score
-    st.subheader("🎉 퀴즈를 모두 완료했습니다!")
+    st.subheader("🎉 3문제를 모두 풀었습니다!")
     st.metric(label="최종 점수", value=f"{score} / {total_q} 점")
 
     if score == total_q:
