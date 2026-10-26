@@ -4,7 +4,127 @@ import os
 
 st.set_page_config(page_title="천안오성고 바로 알기 퀴즈", page_icon="🏫", layout="centered")
 
-# ================= 전체 퀴즈 데이터베이스 (통합 풀) =================
+# ================= 토스(Toss) 스타일 글로벌 커스텀 CSS =================
+st.markdown("""
+<style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+    /* 전체 배경 및 폰트 */
+    html, body, [class*="css"] {
+        font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif !important;
+        background-color: #F9FAFB !important;
+        color: #191F28 !important;
+    }
+
+    /* Streamlit 기본 헤더/푸터 숨기기 (더 앱 같은 느낌) */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 3rem !important;
+        max-width: 540px !important;
+    }
+
+    /* 토스 스타일 화이트 카드 */
+    .toss-card {
+        background: #FFFFFF;
+        border-radius: 24px;
+        padding: 28px 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        margin-bottom: 20px;
+        border: 1px solid #F2F4F6;
+    }
+
+    /* 토스 뱃지 */
+    .toss-badge {
+        display: inline-block;
+        background: #E8F3FF;
+        color: #1B64DA;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 5px 12px;
+        border-radius: 100px;
+        margin-bottom: 12px;
+    }
+
+    /* 제목 스타일 */
+    .toss-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: #191F28;
+        line-height: 1.45;
+        margin-bottom: 20px;
+        word-break: keep-all;
+    }
+
+    /* 진행도 바 (Step Bar) */
+    .progress-bar-bg {
+        width: 100%;
+        height: 6px;
+        background-color: #E5E8EB;
+        border-radius: 100px;
+        margin-bottom: 24px;
+        overflow: hidden;
+    }
+    .progress-bar-fill {
+        height: 100%;
+        background-color: #3182F6;
+        border-radius: 100px;
+        transition: width 0.3s ease;
+    }
+
+    /* 버튼 공통 토스 스타일 */
+    .stButton > button {
+        border-radius: 16px !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        padding: 14px 20px !important;
+        background-color: #FFFFFF !important;
+        color: #333D4B !important;
+        border: 1.5px solid #E5E8EB !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02) !important;
+        transition: all 0.15s ease-in-out !important;
+    }
+    .stButton > button:hover {
+        border-color: #3182F6 !important;
+        color: #3182F6 !important;
+        background-color: #F8FAFF !important;
+        transform: translateY(-1px);
+    }
+    .stButton > button:active {
+        transform: scale(0.98);
+    }
+
+    /* 강조 버튼 (Primary) */
+    .stButton > button[kind="primary"] {
+        background-color: #3182F6 !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(49, 130, 246, 0.25) !important;
+    }
+    .stButton > button[kind="primary"]:hover {
+        background-color: #1B64DA !important;
+        color: #FFFFFF !important;
+    }
+
+    /* 텍스트 입력창 */
+    .stTextInput input {
+        border-radius: 14px !important;
+        border: 1.5px solid #E5E8EB !important;
+        padding: 14px 16px !important;
+        font-size: 16px !important;
+        background-color: #F9FAFB !important;
+    }
+    .stTextInput input:focus {
+        border-color: #3182F6 !important;
+        background-color: #FFFFFF !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# ================= 전체 퀴즈 데이터베이스 (기존 내용 100% 유지) =================
 ALL_QUIZZES = [
     # [O/X 퀴즈]
     {
@@ -272,90 +392,121 @@ def init_game():
 if "game_questions" not in st.session_state:
     init_game()
 
-# ================= 사이드바: 개발자 모드 =================
-st.sidebar.title("🛠️ 관리자 패널")
-dev_mode = st.sidebar.checkbox("개발자 모드 (문제 검수용)", value=False)
+# ================= 사이드바: 관리자/개발자 모드 =================
+with st.sidebar:
+    st.subheader("🛠️ 관리자 패널")
+    dev_mode = st.checkbox("개발자 모드 (문제 검수용)", value=False)
 
-if dev_mode:
-    st.sidebar.markdown("---")
-    st.sidebar.subheader("🔍 특정 퀴즈 미리보기")
-    
-    quiz_titles = [f"[{q['category']}] {q['q'][:18]}..." for q in ALL_QUIZZES]
-    selected_idx = st.sidebar.selectbox("검수할 문제를 선택하세요:", range(len(ALL_QUIZZES)), format_func=lambda x: quiz_titles[x])
-    target_q = ALL_QUIZZES[selected_idx]
-    
-    st.sidebar.write(f"**ID:** `{target_q['id']}`")
-    st.sidebar.write(f"**정답:** `{target_q['answer']}`")
-    st.sidebar.caption(f"**해설:** {target_q['desc']}")
-    
-    if st.sidebar.button("👉 이 문제를 바로 메인에서 테스트", use_container_width=True):
-        st.session_state.game_questions = [target_q]
-        st.session_state.current_idx = 0
-        st.session_state.score = 0
-        st.session_state.show_feedback = False
-        st.rerun()
+    if dev_mode:
+        st.markdown("---")
+        quiz_titles = [f"[{q['category']}] {q['q'][:16]}..." for q in ALL_QUIZZES]
+        selected_idx = st.selectbox("검수할 문제 선택:", range(len(ALL_QUIZZES)), format_func=lambda x: quiz_titles[x])
+        target_q = ALL_QUIZZES[selected_idx]
+        
+        st.write(f"**정답:** `{target_q['answer']}`")
+        st.caption(f"**해설:** {target_q['desc']}")
+        
+        if st.button("👉 메인에서 테스트", use_container_width=True):
+            st.session_state.game_questions = [target_q]
+            st.session_state.current_idx = 0
+            st.session_state.score = 0
+            st.session_state.show_feedback = False
+            st.rerun()
 
-    if st.sidebar.button("🔄 일반 3문제 모드로 되돌리기", use_container_width=True):
-        init_game()
-        st.rerun()
+        if st.button("🔄 일반 3문제 모드로 복귀", use_container_width=True):
+            init_game()
+            st.rerun()
 
-# ================= 메인 퀴즈 화면 =================
-st.title("🏫 오성고 바로 알기 퀴즈")
-st.markdown("---")
+# ================= 메인 토스 UI 헤더 =================
+st.markdown("""
+    <div style="margin-bottom: 24px;">
+        <span style="font-size: 13px; font-weight: 700; color: #8B95A1;">천안오성고 캠페인</span>
+        <h1 style="font-size: 26px; font-weight: 800; color: #191F28; margin: 4px 0 0 0;">학교 정보 바로 알기</h1>
+    </div>
+""", unsafe_allow_html=True)
 
 current_idx = st.session_state.current_idx
 total_q = len(st.session_state.game_questions)
 
-# 1. 문제 풀이 진행
+# 1. 문제 풀이 진행 화면
 if current_idx < total_q:
     q_data = st.session_state.game_questions[current_idx]
-    
-    st.caption(f"문제 {current_idx + 1} / {total_q}  ·  유형: {q_data['category']}")
-    st.subheader(f"Q{current_idx + 1}. {q_data['q']}")
+    progress_percent = int(((current_idx + (1 if st.session_state.show_feedback else 0.5)) / total_q) * 100)
 
-    # 1) 로고 비교 이미지
+    # 토스형 상단 프로그레스 바
+    st.markdown(f"""
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: {progress_percent}%;"></div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # 토스 메인 카드 래퍼
+    st.markdown(f"""
+        <div class="toss-card">
+            <span class="toss-badge">{q_data['category']} · 문제 {current_idx + 1}</span>
+            <div class="toss-title">{q_data['q']}</div>
+    """, unsafe_allow_html=True)
+
+    # 1) 로고 비교 사진
     if q_data.get("image_type") == "logo":
         col1, col2 = st.columns(2)
         with col1:
             if os.path.exists("images/logo_red.png"):
-                st.image("images/logo_red.png", caption="1번 로고", width=180)
+                st.image("images/logo_red.png", caption="1번 로고", use_container_width=True)
         with col2:
             if os.path.exists("images/logo_purple.png"):
-                st.image("images/logo_purple.png", caption="2번 로고", width=180)
+                st.image("images/logo_purple.png", caption="2번 로고", use_container_width=True)
 
-    # 2) 오별이 이미지
+    # 2) 오별이 캐릭터 사진
     elif q_data.get("image_type") == "obyeol":
         if os.path.exists("images/obyeol.png"):
-            st.image("images/obyeol.png", caption="이 캐릭터의 이름은?", width=200)
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                st.image("images/obyeol.png", caption="이 친구의 이름은?", use_container_width=True)
 
-    # 3) 배치도 퀴즈 이미지 (화면 꽉 차게 표시)
+    # 3) 배치도 퀴즈 사진
     elif "image_path" in q_data:
         img_path = q_data["image_path"]
         if os.path.exists(img_path):
-            st.image(img_path, caption="[참고] 2026 천안오성고 공간조성 배치도", use_container_width=True)
+            st.image(img_path, caption="[참고] 2026 천안오성고 배치도", use_container_width=True)
 
-    # 1-1. 정답 피드백 상태
+    # 1-1. 정답 피드백 상태 (토스 스타일 알림창)
     if st.session_state.show_feedback:
         res = st.session_state.last_result
         if res["is_correct"]:
-            st.success(f"⭕ **정답입니다!**\n\n{res['desc']}")
+            st.markdown(f"""
+                <div style="background-color: #E8F9EE; border-radius: 16px; padding: 20px; margin: 15px 0;">
+                    <div style="font-size: 18px; font-weight: 800; color: #059669; margin-bottom: 6px;">🎉 정답이에요!</div>
+                    <div style="font-size: 15px; color: #374151; line-height: 1.5;">{res['desc']}</div>
+                </div>
+            """, unsafe_allow_html=True)
         else:
             ans_display = res['answer'] if isinstance(res['answer'], str) else res['answer'][0]
-            st.error(f"❌ **오답입니다!** (선택/입력한 답: {res['user_input']})\n\n👉 **정답: {ans_display}**\n\n💡 {res['desc']}")
-            
-        st.write("")
-        if st.button("➡️ 다음으로 이동", use_container_width=True, type="primary"):
+            st.markdown(f"""
+                <div style="background-color: #FEECEE; border-radius: 16px; padding: 20px; margin: 15px 0;">
+                    <div style="font-size: 18px; font-weight: 800; color: #E11D48; margin-bottom: 6px;">아쉬워요, 정답이 아니에요</div>
+                    <div style="font-size: 15px; color: #374151; margin-bottom: 8px;">선택한 답: <strong>{res['user_input']}</strong></div>
+                    <div style="font-size: 15px; font-weight: 700; color: #111827;">👉 올바른 정답: {ans_display}</div>
+                    <div style="font-size: 14px; color: #4B5563; margin-top: 6px; line-height: 1.5;">{res['desc']}</div>
+                </div>
+            """, unsafe_allow_html=True)
+
+        st.markdown("</div>", unsafe_allow_html=True) # 카드 닫기
+        
+        if st.button("다음으로", use_container_width=True, type="primary"):
             st.session_state.show_feedback = False
             st.session_state.current_idx += 1
             st.rerun()
 
-    # 1-2. 문제 풀이 입력 상태
+    # 1-2. 답안 선택/입력 상태
     else:
-        # 단답형
+        st.markdown("</div>", unsafe_allow_html=True) # 카드 닫기
+
+        # 단답형 입력 폼
         if q_data["type"] == "short":
             with st.form(key=f"short_form_{current_idx}"):
-                user_val = st.text_input("정답 입력 (숫자 또는 단어):", placeholder="여기에 정답을 입력하세요")
-                submit = st.form_submit_button("정답 제출", use_container_width=True)
+                user_val = st.text_input("정답 입력", placeholder="정답을 입력해주세요", label_visibility="collapsed")
+                submit = st.form_submit_button("확인", use_container_width=True, type="primary")
                 
                 if submit:
                     clean_input = user_val.replace(" ", "").strip()
@@ -374,7 +525,7 @@ if current_idx < total_q:
                         st.session_state.show_feedback = True
                         st.rerun()
 
-        # O/X 형
+        # O/X 버튼
         elif q_data["type"] == "ox":
             col1, col2 = st.columns(2)
             for idx, opt in enumerate(q_data["options"]):
@@ -392,7 +543,7 @@ if current_idx < total_q:
                     st.session_state.show_feedback = True
                     st.rerun()
 
-        # 객관식 형 (배치도 문제 포함)
+        # 객관식 선택 버튼
         else:
             for opt in q_data["options"]:
                 if st.button(opt, use_container_width=True, key=f"choice_{current_idx}_{opt}"):
@@ -408,19 +559,40 @@ if current_idx < total_q:
                     st.session_state.show_feedback = True
                     st.rerun()
 
-# 2. 결과 화면
+# 2. 결과 화면 (토스 스타일 결과 카드)
 else:
     score = st.session_state.score
-    st.subheader("🎉 3문제를 모두 풀었습니다!")
-    st.metric(label="최종 점수", value=f"{score} / {total_q} 점")
 
     if score == total_q:
         st.balloons()
-        st.success("🏆 **만점입니다! 축하합니다!**\n\n스태프에게 이 화면을 보여주고 **ABC 초콜릿 3개**를 받으세요! 🍫🍫🍫")
+        st.markdown(f"""
+            <div class="toss-card" style="text-align: center; padding: 40px 24px;">
+                <div style="font-size: 52px; margin-bottom: 12px;">🏆</div>
+                <span class="toss-badge" style="background:#E8F3FF; color:#1B64DA;">만점 달성</span>
+                <h2 style="font-size: 26px; font-weight: 800; color: #191F28; margin: 12px 0 6px 0;">3문제를 다 맞혔어요!</h2>
+                <p style="font-size: 15px; color: #6B7684; margin-bottom: 24px;">오성고에 대해 정말 완벽하게 알고 계시네요.</p>
+                <div style="background: #F8FAFF; border: 1.5px solid #E8F3FF; border-radius: 18px; padding: 18px; margin-bottom: 10px;">
+                    <span style="font-size: 14px; color: #4B5563;">받으실 간식 혜택</span>
+                    <div style="font-size: 20px; font-weight: 800; color: #1B64DA; margin-top: 4px;">🍫 ABC 초콜릿 3개</div>
+                </div>
+                <p style="font-size: 13px; color: #8B95A1;">부스 스태프에게 이 화면을 보여주세요!</p>
+            </div>
+        """, unsafe_allow_html=True)
     else:
-        st.info("👏 **수고하셨습니다! (참여 완료)**\n\n스태프에게 이 화면을 보여주고 **ABC 초콜릿 1개**를 받으세요! 🍫")
+        st.markdown(f"""
+            <div class="toss-card" style="text-align: center; padding: 40px 24px;">
+                <div style="font-size: 52px; margin-bottom: 12px;">👏</div>
+                <span class="toss-badge" style="background:#F2F4F6; color:#4E5968;">참여 완료</span>
+                <h2 style="font-size: 26px; font-weight: 800; color: #191F28; margin: 12px 0 6px 0;">퀴즈를 완료했어요!</h2>
+                <p style="font-size: 15px; color: #6B7684; margin-bottom: 24px;">총 3문제 중 <strong>{score}문제</strong>를 맞혔어요.</p>
+                <div style="background: #F9FAFB; border: 1.5px solid #F2F4F6; border-radius: 18px; padding: 18px; margin-bottom: 10px;">
+                    <span style="font-size: 14px; color: #4B5563;">받으실 간식 혜택</span>
+                    <div style="font-size: 20px; font-weight: 800; color: #333D4B; margin-top: 4px;">🍫 ABC 초콜릿 1개</div>
+                </div>
+                <p style="font-size: 13px; color: #8B95A1;">부스 스태프에게 이 화면을 보여주세요!</p>
+            </div>
+        """, unsafe_allow_html=True)
 
-    st.markdown("---")
-    if st.button("🔄 다음 학생 퀴즈 시작하기", use_container_width=True, type="primary"):
+    if st.button("처음으로 (다음 학생)", use_container_width=True, type="primary"):
         init_game()
         st.rerun()
