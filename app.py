@@ -16,24 +16,24 @@ st.markdown("""
         color: #191F28 !important;
     }
 
-    /* Streamlit 기본 헤더/푸터 숨기기 (더 앱 같은 느낌) */
+    /* 불필요한 기본 푸터/메뉴만 숨기고 사이드바 토글 버튼은 살림 */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    header {visibility: hidden;}
     
+    /* 좌우 너비 대폭 확장 (노트북 화면 최적화: 860px) */
     .block-container {
-        padding-top: 2rem !important;
-        padding-bottom: 3rem !important;
-        max-width: 540px !important;
+        padding-top: 2.5rem !important;
+        padding-bottom: 4rem !important;
+        max-width: 860px !important;
     }
 
     /* 토스 스타일 화이트 카드 */
     .toss-card {
         background: #FFFFFF;
-        border-radius: 24px;
-        padding: 28px 24px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-        margin-bottom: 20px;
+        border-radius: 28px;
+        padding: 36px 36px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+        margin-bottom: 24px;
         border: 1px solid #F2F4F6;
     }
 
@@ -42,30 +42,30 @@ st.markdown("""
         display: inline-block;
         background: #E8F3FF;
         color: #1B64DA;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 700;
-        padding: 5px 12px;
+        padding: 6px 14px;
         border-radius: 100px;
-        margin-bottom: 12px;
+        margin-bottom: 16px;
     }
 
-    /* 제목 스타일 */
+    /* 문제 제목 스타일 (시원하게 크기 확대) */
     .toss-title {
-        font-size: 22px;
+        font-size: 26px;
         font-weight: 800;
         color: #191F28;
-        line-height: 1.45;
-        margin-bottom: 20px;
+        line-height: 1.5;
+        margin-bottom: 12px;
         word-break: keep-all;
     }
 
     /* 진행도 바 (Step Bar) */
     .progress-bar-bg {
         width: 100%;
-        height: 6px;
+        height: 8px;
         background-color: #E5E8EB;
         border-radius: 100px;
-        margin-bottom: 24px;
+        margin-bottom: 28px;
         overflow: hidden;
     }
     .progress-bar-fill {
@@ -75,26 +75,26 @@ st.markdown("""
         transition: width 0.3s ease;
     }
 
-    /* 버튼 공통 토스 스타일 */
+    /* 버튼 공통 토스 스타일 (크기 확대 & 클릭감 향상) */
     .stButton > button {
-        border-radius: 16px !important;
-        font-size: 16px !important;
+        border-radius: 18px !important;
+        font-size: 18px !important;
         font-weight: 700 !important;
-        padding: 14px 20px !important;
+        padding: 16px 24px !important;
         background-color: #FFFFFF !important;
         color: #333D4B !important;
         border: 1.5px solid #E5E8EB !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.02) !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02) !important;
         transition: all 0.15s ease-in-out !important;
     }
     .stButton > button:hover {
         border-color: #3182F6 !important;
         color: #3182F6 !important;
         background-color: #F8FAFF !important;
-        transform: translateY(-1px);
+        transform: translateY(-2px);
     }
     .stButton > button:active {
-        transform: scale(0.98);
+        transform: scale(0.99);
     }
 
     /* 강조 버튼 (Primary) */
@@ -102,7 +102,7 @@ st.markdown("""
         background-color: #3182F6 !important;
         color: #FFFFFF !important;
         border: none !important;
-        box-shadow: 0 4px 12px rgba(49, 130, 246, 0.25) !important;
+        box-shadow: 0 4px 14px rgba(49, 130, 246, 0.28) !important;
     }
     .stButton > button[kind="primary"]:hover {
         background-color: #1B64DA !important;
@@ -111,10 +111,10 @@ st.markdown("""
 
     /* 텍스트 입력창 */
     .stTextInput input {
-        border-radius: 14px !important;
+        border-radius: 16px !important;
         border: 1.5px solid #E5E8EB !important;
-        padding: 14px 16px !important;
-        font-size: 16px !important;
+        padding: 16px 20px !important;
+        font-size: 18px !important;
         background-color: #F9FAFB !important;
     }
     .stTextInput input:focus {
@@ -392,17 +392,19 @@ def init_game():
 if "game_questions" not in st.session_state:
     init_game()
 
-# ================= 사이드바: 관리자/개발자 모드 =================
+# ================= 사이드바: 관리자/개발자 모드 복구 =================
 with st.sidebar:
-    st.subheader("🛠️ 관리자 패널")
+    st.title("🛠️ 관리자 패널")
     dev_mode = st.checkbox("개발자 모드 (문제 검수용)", value=False)
 
     if dev_mode:
         st.markdown("---")
-        quiz_titles = [f"[{q['category']}] {q['q'][:16]}..." for q in ALL_QUIZZES]
-        selected_idx = st.selectbox("검수할 문제 선택:", range(len(ALL_QUIZZES)), format_func=lambda x: quiz_titles[x])
+        st.subheader("🔍 특정 퀴즈 미리보기")
+        quiz_titles = [f"[{q['category']}] {q['q'][:18]}..." for q in ALL_QUIZZES]
+        selected_idx = st.selectbox("검수할 문제를 선택하세요:", range(len(ALL_QUIZZES)), format_func=lambda x: quiz_titles[x])
         target_q = ALL_QUIZZES[selected_idx]
         
+        st.write(f"**ID:** `{target_q['id']}`")
         st.write(f"**정답:** `{target_q['answer']}`")
         st.caption(f"**해설:** {target_q['desc']}")
         
@@ -417,11 +419,11 @@ with st.sidebar:
             init_game()
             st.rerun()
 
-# ================= 메인 토스 UI 헤더 =================
+# ================= 메인 헤더 =================
 st.markdown("""
     <div style="margin-bottom: 24px;">
-        <span style="font-size: 13px; font-weight: 700; color: #8B95A1;">천안오성고 캠페인</span>
-        <h1 style="font-size: 26px; font-weight: 800; color: #191F28; margin: 4px 0 0 0;">학교 정보 바로 알기</h1>
+        <span style="font-size: 14px; font-weight: 700; color: #8B95A1;">천안오성고 캠페인</span>
+        <h1 style="font-size: 30px; font-weight: 800; color: #191F28; margin: 4px 0 0 0;">학교 정보 바로 알기</h1>
     </div>
 """, unsafe_allow_html=True)
 
@@ -440,7 +442,7 @@ if current_idx < total_q:
         </div>
     """, unsafe_allow_html=True)
 
-    # 토스 메인 카드 래퍼
+    # 토스 메인 카드 래퍼 시작
     st.markdown(f"""
         <div class="toss-card">
             <span class="toss-badge">{q_data['category']} · 문제 {current_idx + 1}</span>
@@ -470,24 +472,24 @@ if current_idx < total_q:
         if os.path.exists(img_path):
             st.image(img_path, caption="[참고] 2026 천안오성고 배치도", use_container_width=True)
 
-    # 1-1. 정답 피드백 상태 (토스 스타일 알림창)
+    # 1-1. 정답 피드백 상태
     if st.session_state.show_feedback:
         res = st.session_state.last_result
         if res["is_correct"]:
             st.markdown(f"""
-                <div style="background-color: #E8F9EE; border-radius: 16px; padding: 20px; margin: 15px 0;">
-                    <div style="font-size: 18px; font-weight: 800; color: #059669; margin-bottom: 6px;">🎉 정답이에요!</div>
-                    <div style="font-size: 15px; color: #374151; line-height: 1.5;">{res['desc']}</div>
+                <div style="background-color: #E8F9EE; border-radius: 20px; padding: 24px; margin: 20px 0;">
+                    <div style="font-size: 20px; font-weight: 800; color: #059669; margin-bottom: 8px;">🎉 정답이에요!</div>
+                    <div style="font-size: 16px; color: #374151; line-height: 1.6;">{res['desc']}</div>
                 </div>
             """, unsafe_allow_html=True)
         else:
             ans_display = res['answer'] if isinstance(res['answer'], str) else res['answer'][0]
             st.markdown(f"""
-                <div style="background-color: #FEECEE; border-radius: 16px; padding: 20px; margin: 15px 0;">
-                    <div style="font-size: 18px; font-weight: 800; color: #E11D48; margin-bottom: 6px;">아쉬워요, 정답이 아니에요</div>
-                    <div style="font-size: 15px; color: #374151; margin-bottom: 8px;">선택한 답: <strong>{res['user_input']}</strong></div>
-                    <div style="font-size: 15px; font-weight: 700; color: #111827;">👉 올바른 정답: {ans_display}</div>
-                    <div style="font-size: 14px; color: #4B5563; margin-top: 6px; line-height: 1.5;">{res['desc']}</div>
+                <div style="background-color: #FEECEE; border-radius: 20px; padding: 24px; margin: 20px 0;">
+                    <div style="font-size: 20px; font-weight: 800; color: #E11D48; margin-bottom: 8px;">아쉬워요, 정답이 아니에요</div>
+                    <div style="font-size: 16px; color: #374151; margin-bottom: 8px;">선택한 답: <strong>{res['user_input']}</strong></div>
+                    <div style="font-size: 16px; font-weight: 700; color: #111827;">👉 올바른 정답: {ans_display}</div>
+                    <div style="font-size: 15px; color: #4B5563; margin-top: 8px; line-height: 1.6;">{res['desc']}</div>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -502,7 +504,7 @@ if current_idx < total_q:
     else:
         st.markdown("</div>", unsafe_allow_html=True) # 카드 닫기
 
-        # 단답형 입력 폼
+        # 단답형
         if q_data["type"] == "short":
             with st.form(key=f"short_form_{current_idx}"):
                 user_val = st.text_input("정답 입력", placeholder="정답을 입력해주세요", label_visibility="collapsed")
@@ -525,7 +527,7 @@ if current_idx < total_q:
                         st.session_state.show_feedback = True
                         st.rerun()
 
-        # O/X 버튼
+        # O/X 형
         elif q_data["type"] == "ox":
             col1, col2 = st.columns(2)
             for idx, opt in enumerate(q_data["options"]):
@@ -543,7 +545,7 @@ if current_idx < total_q:
                     st.session_state.show_feedback = True
                     st.rerun()
 
-        # 객관식 선택 버튼
+        # 객관식 형
         else:
             for opt in q_data["options"]:
                 if st.button(opt, use_container_width=True, key=f"choice_{current_idx}_{opt}"):
@@ -559,37 +561,37 @@ if current_idx < total_q:
                     st.session_state.show_feedback = True
                     st.rerun()
 
-# 2. 결과 화면 (토스 스타일 결과 카드)
+# 2. 결과 화면
 else:
     score = st.session_state.score
 
     if score == total_q:
         st.balloons()
         st.markdown(f"""
-            <div class="toss-card" style="text-align: center; padding: 40px 24px;">
-                <div style="font-size: 52px; margin-bottom: 12px;">🏆</div>
+            <div class="toss-card" style="text-align: center; padding: 48px 32px;">
+                <div style="font-size: 56px; margin-bottom: 16px;">🏆</div>
                 <span class="toss-badge" style="background:#E8F3FF; color:#1B64DA;">만점 달성</span>
-                <h2 style="font-size: 26px; font-weight: 800; color: #191F28; margin: 12px 0 6px 0;">3문제를 다 맞혔어요!</h2>
-                <p style="font-size: 15px; color: #6B7684; margin-bottom: 24px;">오성고에 대해 정말 완벽하게 알고 계시네요.</p>
-                <div style="background: #F8FAFF; border: 1.5px solid #E8F3FF; border-radius: 18px; padding: 18px; margin-bottom: 10px;">
-                    <span style="font-size: 14px; color: #4B5563;">받으실 간식 혜택</span>
-                    <div style="font-size: 20px; font-weight: 800; color: #1B64DA; margin-top: 4px;">🍫 ABC 초콜릿 3개</div>
+                <h2 style="font-size: 28px; font-weight: 800; color: #191F28; margin: 12px 0 8px 0;">3문제를 다 맞혔어요!</h2>
+                <p style="font-size: 16px; color: #6B7684; margin-bottom: 28px;">오성고에 대해 정말 완벽하게 알고 계시네요.</p>
+                <div style="background: #F8FAFF; border: 1.5px solid #E8F3FF; border-radius: 20px; padding: 22px; margin-bottom: 14px;">
+                    <span style="font-size: 15px; color: #4B5563;">받으실 간식 혜택</span>
+                    <div style="font-size: 24px; font-weight: 800; color: #1B64DA; margin-top: 4px;">🍫 ABC 초콜릿 3개</div>
                 </div>
-                <p style="font-size: 13px; color: #8B95A1;">부스 스태프에게 이 화면을 보여주세요!</p>
+                <p style="font-size: 14px; color: #8B95A1;">부스 스태프에게 이 화면을 보여주세요!</p>
             </div>
         """, unsafe_allow_html=True)
     else:
         st.markdown(f"""
-            <div class="toss-card" style="text-align: center; padding: 40px 24px;">
-                <div style="font-size: 52px; margin-bottom: 12px;">👏</div>
+            <div class="toss-card" style="text-align: center; padding: 48px 32px;">
+                <div style="font-size: 56px; margin-bottom: 16px;">👏</div>
                 <span class="toss-badge" style="background:#F2F4F6; color:#4E5968;">참여 완료</span>
-                <h2 style="font-size: 26px; font-weight: 800; color: #191F28; margin: 12px 0 6px 0;">퀴즈를 완료했어요!</h2>
-                <p style="font-size: 15px; color: #6B7684; margin-bottom: 24px;">총 3문제 중 <strong>{score}문제</strong>를 맞혔어요.</p>
-                <div style="background: #F9FAFB; border: 1.5px solid #F2F4F6; border-radius: 18px; padding: 18px; margin-bottom: 10px;">
-                    <span style="font-size: 14px; color: #4B5563;">받으실 간식 혜택</span>
-                    <div style="font-size: 20px; font-weight: 800; color: #333D4B; margin-top: 4px;">🍫 ABC 초콜릿 1개</div>
+                <h2 style="font-size: 28px; font-weight: 800; color: #191F28; margin: 12px 0 8px 0;">퀴즈를 완료했어요!</h2>
+                <p style="font-size: 16px; color: #6B7684; margin-bottom: 28px;">총 3문제 중 <strong>{score}문제</strong>를 맞혔어요.</p>
+                <div style="background: #F9FAFB; border: 1.5px solid #F2F4F6; border-radius: 20px; padding: 22px; margin-bottom: 14px;">
+                    <span style="font-size: 15px; color: #4B5563;">받으실 간식 혜택</span>
+                    <div style="font-size: 24px; font-weight: 800; color: #333D4B; margin-top: 4px;">🍫 ABC 초콜릿 1개</div>
                 </div>
-                <p style="font-size: 13px; color: #8B95A1;">부스 스태프에게 이 화면을 보여주세요!</p>
+                <p style="font-size: 14px; color: #8B95A1;">부스 스태프에게 이 화면을 보여주세요!</p>
             </div>
         """, unsafe_allow_html=True)
 
