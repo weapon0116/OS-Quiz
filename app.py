@@ -156,7 +156,7 @@ ALL_QUIZZES = [
     {
         "id": "CHOICE-5",
         "category": "객관식(배치도)",
-        "q": "[배치도 퀴즈] 3층 D305호에 위치하는 이곳은 어디일까요?",
+        "q": "[배치도 퀴즈] 우리학교 로고로 표시되어 있는 3층 D305호에 위치하는 이곳은 어디일까요?",
         "type": "choice",
         "image_path": "images/floor_map_store.png",
         "options": ["매점", "교무센터1", "성적관리실"],
@@ -166,7 +166,7 @@ ALL_QUIZZES = [
     {
         "id": "CHOICE-6",
         "category": "객관식(배치도)",
-        "q": "[배치도 퀴즈] 각 층 복도마다 학생들이 모여 쉴 수 있게 마련된 열린 공간의 명칭은?",
+        "q": "[배치도 퀴즈] 우리학교 로고로 표시되어 있는 각 층 복도마다 학생들이 모여 쉴 수 있게 마련된 열린 공간의 명칭은?",
         "type": "choice",
         "image_path": "images/floor_map_homebase.png",
         "options": ["홈베이스", "홈그라운드", "센트럴홈"],
@@ -176,7 +176,7 @@ ALL_QUIZZES = [
     {
         "id": "CHOICE-7",
         "category": "객관식(배치도)",
-        "q": "[배치도 퀴즈] 3층 D310호에 위치한 실습실의 올바른 명칭은?",
+        "q": "[배치도 퀴즈] 우리학교 로고로 표시되어 있는 3층 D310호에 위치한 교실의 올바른 명칭은?",
         "type": "choice",
         "image_path": "images/floor_map_ai.png",
         "options": ["AI 실습실", "AI 융합실", "AI 학습실"],
@@ -186,7 +186,7 @@ ALL_QUIZZES = [
     {
         "id": "CHOICE-8",
         "category": "객관식(배치도)",
-        "q": "[배치도 퀴즈] 2층 D209호에 위치한 분석실의 올바른 명칭은?",
+        "q": "[배치도 퀴즈] 우리학교 로고로 표시되어 있는 2층 D209호에 위치한 교실의 올바른 명칭은?",
         "type": "choice",
         "image_path": "images/floor_map_bigdata.png",
         "options": ["빅데이터 분석실", "빅데이터 활용실", "빅데이터 실습실"],
